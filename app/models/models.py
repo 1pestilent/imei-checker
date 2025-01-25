@@ -19,18 +19,20 @@ class Base(AsyncAttrs, DeclarativeBase):
     pass
 
 
-class User(Base):
+class UserModel(Base):
     __tablename__ = 'users'
 
-    id = mapped_column(BigInteger, primary_key=True, nullable=False)
-    tg_nick: Mapped[str] = mapped_column(String(32), nullable=False)
-    firts_name: Mapped[str] = mapped_column(String(32), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    first_name: Mapped[str] = mapped_column(String(32), nullable=False)
     last_name: Mapped[str] = mapped_column(String(32), nullable=False)
-    created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"), nullable=False)
-    updated_at: Mapped[DateTime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"), onupdate=text("CURRENT_TIMESTAMP"), nullable=False)
+    tg_id: Mapped[int] = mapped_column(nullable=False, unique=True)
+    tg_nick: Mapped[str] = mapped_column(String(32), nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"))
+    updated_at: Mapped[DateTime] = mapped_column(DateTime, server_default=text("CURRENT_TIMESTAMP"), onupdate=text("CURRENT_TIMESTAMP"))
 
 
 async def setup_database():
     async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
     return {"Status": True, "Text": "База успешно создана!"}
