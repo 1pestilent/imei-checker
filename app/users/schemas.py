@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 
-
 class UserLoginSchema(BaseModel):
     telegram_id: int
     password: str
+
 class UserAddSchema(UserLoginSchema):
     fullname: str
 
