@@ -8,5 +8,5 @@ class UserAddSchema(BaseModel):
 
 class UserSchema(UserAddSchema):
     id: int
-    created_ad: str
-    updated_ad: str
+    created_at: str
+    updated_at: str

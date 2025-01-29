@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 import uvicorn
 
-from routers import user
+from imei import views
+from users import views
 
 app = FastAPI()
-app.include_router(router=user.router)
+app.include_router(router=views.router)
+app.include_router(router=views.router)
 
 
 if __name__ == '__main__':
