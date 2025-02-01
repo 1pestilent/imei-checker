@@ -40,14 +40,14 @@ def encode_jwt(
 
 def decode_jwt(token: str | bytes, public_key: str = config.PUBLIC_KEY_PATH.read_text(), algorithm: str = config.ALGORITHM):
     decoded = jwt.decode(token,
-                         key,
+                         public_key,
                          algorithms=[algorithm])
     return decoded 
 
-def create_access_token(subject: int, expires_delta : int | None = None) -> str:
+def create_access_token(id: int, expires_delta : int | None = None) -> str:
     if expires_delta is not None:
         expires_delta = datetime.utcnow() + expires_delta
     else:
         expire = datetime.utcnow() + timedelta(config.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode = {"sub": subject, "exp": expire}
+    to_encode = {"id": id, "exp": expire}
     return jwt.encode(to_encode, config.SECRET_KEY, algorithm=config.ALGORITHM)
