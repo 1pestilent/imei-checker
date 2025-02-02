@@ -17,6 +17,6 @@ class UserSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-class Token(BaseModel):
+class TokenSchema(BaseModel):
     access_token: str | None = None
     token_type: str = "Bearer"

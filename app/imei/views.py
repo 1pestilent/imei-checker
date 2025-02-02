@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from typing import Annotated
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from core.models import base
+from app.core.models import base
 
 router = APIRouter(prefix="/imei", tags=["IMEI"])
 

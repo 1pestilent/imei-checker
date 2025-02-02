@@ -2,8 +2,8 @@ import bcrypt
 from datetime import datetime, timedelta
 import jwt
 
-from core import config
-from users import schemas
+from app.core import config
+from app.users import schemas
 
 def hash_password(password: str) -> bytes:
     salt = bcrypt.gensalt()
