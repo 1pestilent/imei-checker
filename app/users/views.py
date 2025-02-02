@@ -40,7 +40,7 @@ async def get_user_by_id(searched_user: int ,
         updated_at=user_output.updated_at
     )
 
-@router.post("/registration")
+@router.post("/registration", response_model=TokenSchema)
 async def registration_user(data: UserAddSchema, session: SessionDep):
     new_user = UserModel(
         telegram_id = data.telegram_id,
@@ -48,13 +48,25 @@ async def registration_user(data: UserAddSchema, session: SessionDep):
         fullname = data.fullname,
     )
     session.add(new_user)
+
     try:
         await session.commit()
+        await session.refresh(new_user)  
     except IntegrityError:
         await session.rollback()
         raise HTTPException(status.HTTP_400_BAD_REQUEST,
                             detail=f"User with telegram_id: {data.telegram_id} is already exists.")
-    return {"message": "User added"}        
+   
+    user = UserSchema.from_orm(new_user)
+
+    access_token = await auth.create_access_token(user=user)
+    refresh_token = await auth.create_refresh_token(user=user)
+    
+    return TokenSchema(
+        access_token=access_token,
+        refresh_token=refresh_token,
+    )
+     
 
 @router.post("/login", response_model=TokenSchema)
 async def auth_user(user: UserSchema = Depends(auth.validate_user)):
