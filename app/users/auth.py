@@ -3,16 +3,60 @@ from fastapi.security import HTTPBasicCredentials, HTTPAuthorizationCredentials,
 from sqlalchemy import select
 from jwt import InvalidTokenError
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime, timedelta
 from typing import Annotated
 
 from app.core.models.user import UserModel
 from app.core.models import base
+from app.core.security import encode_jwt
 from app.core import security 
+from app.core import config
 from app.users.schemas import *
 
 SessionDep = Annotated[AsyncSession, Depends(base.get_session)]
 http_bearer = HTTPBearer()
 
+TOKEN_TYPE_FIELD = "type"
+ACCESS_TOKEN_TYPE = "access"
+REFRESH_TOKEN_TYPE = "refresh"
+
+async def create_jwt(
+          token_type: str,
+          payload: dict,
+          expire_timedelta: timedelta | None = None
+) -> str:
+    jwt_payload = {TOKEN_TYPE_FIELD: token_type}
+    jwt_payload.update(payload)
+    return encode_jwt(
+         payload=jwt_payload,
+         expire_timedelta=expire_timedelta
+    )
+
+async def create_access_token(user: UserSchema,
+                            expire_timedelta: int | None = None
+                            ) -> str:
+    payload = {
+        "id": user.id,
+        "username": user.fullname,
+        }
+    return await create_jwt(
+         token_type=ACCESS_TOKEN_TYPE,
+         payload=payload,
+         expire_timedelta= expire_timedelta
+    )
+     
+async def create_refresh_token(user: UserSchema,
+                            expire_timedelta: int | None = None
+                            ) -> str:
+    payload = {
+        "id": user.id,
+        "username": user.fullname,
+        }
+    return await create_jwt(
+         token_type=REFRESH_TOKEN_TYPE,
+         payload=payload,
+         expire_timedelta= timedelta(days=config.REFRESH_TOKEN_EXPIRE_DAYS)
+    )    
 
 async def validate_user(credentials: HTTPBasicCredentials, session: SessionDep) -> UserSchema:
     query = select(UserModel).where(UserModel.telegram_id == credentials.username)

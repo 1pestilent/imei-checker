@@ -13,7 +13,7 @@ from app.users.schemas import *
 router = APIRouter(prefix="/user", tags=["User"])
 SessionDep = Annotated[AsyncSession, Depends(base.get_session)]
 
-@router.get("/users/me/")
+@router.get("/me/")
 async def get_current_user(
     payload: dict = Depends(auth.get_current_token_payload),
     current_user: UserSchema = Depends(auth.get_current_auth_user),
@@ -57,12 +57,12 @@ async def registration_user(data: UserAddSchema, session: SessionDep):
     return {"message": "User added"}        
 
 @router.post("/login", response_model=TokenSchema)
-def auth_user(user: UserSchema = Depends(auth.validate_user)):
-    payload = {
-        "id": user.id,
-        "username": user.fullname,
-    }
-    token = security.encode_jwt(payload=payload)
+async def auth_user(user: UserSchema = Depends(auth.validate_user)):
+
+    access_token = await auth.create_access_token(user=user)
+    refresh_token = await auth.create_refresh_token(user=user)
+
     return TokenSchema(
-        access_token=token,
+        access_token=access_token,
+        refresh_token=refresh_token,
     )
