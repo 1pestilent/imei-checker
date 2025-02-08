@@ -8,7 +8,7 @@ class UserLoginSchema(BaseModel):
 class UserAddSchema(UserLoginSchema):
     fullname: str
 
-class UserSchema(BaseModel):
+class SafelyUserSchema(BaseModel):
     model_config = ConfigDict(strict=True, from_attributes=True)
 
     id: int
@@ -17,7 +17,5 @@ class UserSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-class TokenSchema(BaseModel):
-    access_token: str | None = None
-    refresh_token: str | None = None
-    token_type: str = "Bearer"
+class UserSchema(SafelyUserSchema):
+    password: bytes

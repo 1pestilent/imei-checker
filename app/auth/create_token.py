@@ -2,7 +2,7 @@ from datetime import timedelta
 
 from app.core.config import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, REFRESH_TOKEN_EXPIRE_DAYS
 from app.users.schemas import UserSchema
-from app.auth.jwt import create_jwt
+from app.core.security import create_jwt
 
 async def access_token(user: UserSchema,
                             expire_timedelta: int | None = None
