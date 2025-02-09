@@ -27,3 +27,15 @@ async def login_for_tokens(form_data: Annotated[OAuth2PasswordRequestForm, Depen
         access_token=access_token,
         refresh_token=refresh_token
     )
+
+@router.post("/refresh",
+            response_model=TokenSchema,
+            response_model_exclude_none=True,
+            dependencies=[Depends(http_bearer)]
+            )
+async def refresh_access_token(user: SafelyUserSchema = Depends(utils.get_current_user_for_refresh)):
+    access_token = await create_token.access_token(user)
+
+    return TokenSchema(
+        access_token=access_token
+    )

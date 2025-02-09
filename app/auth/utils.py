@@ -9,7 +9,7 @@ from app.auth.schemas import TokenSchema
 from app.core.models.user import UserModel
 from app.core.models import base
 from app.core import security
-from app.core.config import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE
+from app.core.config import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE
 from app.users.schemas import UserSchema, SafelyUserSchema
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -85,12 +85,24 @@ def validate_token_type(
         detail=f"invalid token type {current_token_type!r} expected {token_type!r}",
     )
 
+async def get_user_from_payload(payload: dict,
+                                session: session_dep,
+                                ) -> SafelyUserSchema:
+    telegram_id = payload.get("id")
+    user = await get_user(int(telegram_id), session)
+    return return_safe_user(user)
 
 async def get_current_user(session: session_dep,
                            payload: Annotated[dict, Depends(get_token_payload)],
+                           token
                            ):
     if validate_token_type(payload, ACCESS_TOKEN_TYPE):
-        telegram_id = payload.get("id")
-        user = await get_user(int(telegram_id), session)
-
-        return return_safe_user(user)
+        user = await get_user_from_payload(payload, session)
+        return user
+    
+async def get_current_user_for_refresh(session: session_dep,
+                           payload: Annotated[dict, Depends(get_token_payload)],
+                           ):
+    if validate_token_type(payload, REFRESH_TOKEN_TYPE):
+        user = await get_user_from_payload(payload, session)
+        return user
