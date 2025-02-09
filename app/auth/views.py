@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Form
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import HTTPBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
@@ -11,16 +11,12 @@ from app.users.schemas import UserLoginSchema, SafelyUserSchema, UserSchema
 
 router = APIRouter(tags=["Auth"])
 
+http_bearer = HTTPBearer(auto_error=False)
 
-@router.post("/test/")
-async def test(data: Annotated[UserLoginSchema, Form()],
-               session: AsyncSession = Depends(base.get_session)
-               ):
-    return await utils.get_user(data.telegram_id, session)
 
 @router.post("/token")
 async def login_for_tokens(form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-                           session: AsyncSession = Depends(base.get_session)
+                           session: utils.session_dep,
                                  ) -> TokenSchema:
     user = await utils.authenticate_user(int(form_data.username),form_data.password, session)
     
