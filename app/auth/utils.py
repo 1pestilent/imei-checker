@@ -92,17 +92,18 @@ async def get_user_from_payload(payload: dict,
     user = await get_user(int(telegram_id), session)
     return return_safe_user(user)
 
-async def get_current_user(session: session_dep,
-                           payload: Annotated[dict, Depends(get_token_payload)],
-                           token
-                           ):
+async def get_current_user(
+        session: session_dep,
+        payload: Annotated[dict, Depends(get_token_payload)],
+        ):
     if validate_token_type(payload, ACCESS_TOKEN_TYPE):
         user = await get_user_from_payload(payload, session)
         return user
     
-async def get_current_user_for_refresh(session: session_dep,
-                           payload: Annotated[dict, Depends(get_token_payload)],
-                           ):
+async def get_current_user_for_refresh(
+        session: session_dep,
+        payload: Annotated[dict, Depends(get_token_payload)],
+        ):
     if validate_token_type(payload, REFRESH_TOKEN_TYPE):
         user = await get_user_from_payload(payload, session)
         return user

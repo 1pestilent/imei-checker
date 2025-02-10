@@ -3,11 +3,10 @@ from fastapi.security import HTTPBearer, OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
-from app.core.models import base
 from app.auth import utils
 from app.auth import create_token
 from app.auth.schemas import TokenSchema
-from app.users.schemas import UserLoginSchema, SafelyUserSchema, UserSchema
+from app.users.schemas import SafelyUserSchema
 
 router = APIRouter(tags=["Auth"])
 
