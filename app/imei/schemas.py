@@ -1,13 +1,16 @@
 from pydantic import BaseModel, RootModel
-from typing import List
+from typing import List, Optional
 
 class BalanceSchema(BaseModel):
     balance: float
 
-class ServiceItemSchema(BaseModel):
+class ItemForServicesSchema(BaseModel):
     id: int
     title: str
     price: float
 
+class ServiceItemSchema(ItemForServicesSchema):
+    properties: Optional[dict] = None
+    
 class ServicesSchema(RootModel):
-    root: List[ServiceItemSchema]
+    root: List[ItemForServicesSchema]

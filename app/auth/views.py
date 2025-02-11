@@ -1,6 +1,5 @@
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends
 from fastapi.security import HTTPBearer, OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
 from app.auth import utils

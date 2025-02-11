@@ -5,7 +5,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
 
-from app.auth.schemas import TokenSchema
 from app.core.models.user import UserModel
 from app.core.models import base
 from app.core import security

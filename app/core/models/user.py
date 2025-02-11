@@ -1,5 +1,6 @@
 from sqlalchemy import BigInteger, String, DateTime, text
 from sqlalchemy.orm import Mapped, mapped_column
+
 from app.core.models.base import Base
 
 class UserModel(Base):
