@@ -1,11 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.models import base
 from app.imei.utils import imei
 
-from app.imei.schemas import BalanceSchema, ServicesSchema, ServiceItemSchema
+from app.imei.schemas import BalanceSchema, ServicesSchema, ServiceItemSchema, CheckSchema
 from app.auth.utils import get_current_user, http_bearer
 from app.users.schemas import UserSchema
 
@@ -38,12 +38,11 @@ async def get_service_by_id(
     service: ServiceItemSchema = await imei.get_service(service_id)
     return service
 
-@router.get("/check")
+@router.post("/check")
 async def check_by_imei(
     session: SessionDep,
     user: Annotated[UserSchema, Depends(get_current_user)],
-    service_id: int,
-    device_id: str,
+    data: Annotated[CheckSchema, Form()],
     ):
-    info = await imei.check_imei(service_id, device_id)
+    info = await imei.check_imei(data.service_id, data.device_id)
     return info

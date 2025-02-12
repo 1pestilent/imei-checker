@@ -1,6 +1,9 @@
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel, RootModel, Field
 from typing import List, Optional
 
+class CheckSchema(BaseModel):
+    service_id: int 
+    device_id: str = Field(min_length=8, max_length=15)
 class BalanceSchema(BaseModel):
     balance: float
 

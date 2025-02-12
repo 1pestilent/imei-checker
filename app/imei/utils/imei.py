@@ -11,8 +11,9 @@ load_dotenv()
 IMEI_API_KEY = os.getenv('IMEI_API_KEY')
 
 async def response_handler(response: ClientResponse):
-    print(response.status)
+
     response_json = await response.json()
+    
     if response.status == 200:
         return response_json
     
@@ -35,7 +36,7 @@ async def response_handler(response: ClientResponse):
     
 
 
-async def get_balance():
+async def get_balance() -> BalanceSchema:
     async with ClientSession() as session:
 
         headers = {
@@ -47,7 +48,7 @@ async def get_balance():
             return await response_handler(response)
 
 
-async def get_services():
+async def get_services() -> ServicesSchema:
     async with ClientSession() as session:
         
         headers = {
